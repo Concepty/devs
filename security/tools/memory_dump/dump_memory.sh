@@ -1,15 +1,22 @@
 #!/bin/bash
 
+# delimiter
+IFS=$'\n'
+
 # Run the ps command and grep for the desired process
-output=$(ps -ef | grep "process_name")
+read -a output <<< $(ps -ef | grep "$1")
 
 # Extract the PID from the output
-pid=$(echo "$output" | awk '{print $2}')
+# syntax of '{ print $2}' is explained in man awk, 4. Records and fields.
+# Simply put, it's an action defined in awk to print second splited string i.e. pid.
+target_pid=$(echo "${output[0]}" | awk '{print $2}')
+
+echo "pid is $target_pid"
 
 # Check if the PID is not empty
-if [[ -n $pid ]]; then
+if [[ -n $target_pid ]]; then
   # Run gcore with the extracted PID
-  gcore "$pid"
+  sudo gcore $target_pid
 else
   echo "Process not found."
 fi
