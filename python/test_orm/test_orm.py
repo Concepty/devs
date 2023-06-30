@@ -16,7 +16,7 @@ MariaDB > create table test_table (id INT, name VARCHAR(20));
 from sqlalchemy import create_engine, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
 
-engine = create_engine("mariadb://test@localhost/test_orm")
+engine = create_engine("mariadb://test:xxx@localhost/test_orm")
 
 class Test_Table(DeclarativeBase):
     __tablename__ = "test_table"
