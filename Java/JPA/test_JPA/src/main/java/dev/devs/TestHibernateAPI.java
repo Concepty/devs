@@ -9,6 +9,7 @@ import org.hibernate.Version;
 import org.hibernate.cfg.Configuration;
 
 
+import java.io.Serializable;
 import java.util.Properties;
 
 
@@ -19,20 +20,23 @@ public class TestHibernateAPI {
 
     @Entity
     @Table(name="test_Hibernate_1")
-    public class Hibernate1 {
+    public class Hibernate1 implements Serializable {
+
+        @Id
+        @GeneratedValue(strategy=GenerationType.AUTO)
+        @Column(name = "id")
+        private Integer id;
+        @Column(name="name")
         private String name;
         // TODO why long? not int?
-        private long id;
 
         public Hibernate1() {}
-
         /* Getters */
-        @Column(name="name")
+
         public String getName() {
             return name;
         }
-        @Column(name="id")
-        public long getID() {
+        public long getId() {
             return id;
         }
 
@@ -40,7 +44,7 @@ public class TestHibernateAPI {
         public void setName(String name) {
             this.name = name;
         }
-        public void setId(long id) {
+        public void setId(Integer id) {
             this.id = id;
         }
 
@@ -60,6 +64,7 @@ public class TestHibernateAPI {
             flush privileges;
             create [if not exist] table test_hibernate.test_Hibernate_1 (id INT, name VARCHARΩ(20);
          */
+        Hibernate1 hibernate1;
         Properties prop = new Properties();
         prop.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/test_hibernate");
         prop.setProperty("dialect", "org.hibernate.dialect.MySQLDialect");
@@ -73,7 +78,7 @@ public class TestHibernateAPI {
         SessionFactory sessionFactory = new Configuration().addProperties(prop).buildSessionFactory();
         Session session = sessionFactory.openSession();
         session.beginTransaction();
-        Hibernate1 hibernate1 = new Hibernate1();
+        hibernate1 = new Hibernate1();
 
         hibernate1.setId(id);
         hibernate1.setName(name);
