@@ -1,17 +1,12 @@
 package dev.devs;
 
-import com.google.protobuf.Message;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.internal.build.AllowSysOut;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Properties;
 import org.hibernate.cfg.Configuration;
 
 
@@ -57,7 +52,7 @@ public class TestHibernate {
         // TODO: isn't java.lang.* packages are imported automatically?
         Configuration configuration =
                 new Configuration()
-                    .configure("persistence.xml")
+                    .configure("hibernate.cfg.xml")
                     .addAnnotatedClass(TestEntity.class);
 
         // TODO: is this really best?
@@ -74,7 +69,13 @@ public class TestHibernate {
 
     public void run() {
         run_transaction(()-> {
-            System.out.println("run_transaction");
+            Session sess = this.sessionFactory.openSession();
+            TestEntity test = new TestEntity("test");
+            sess.beginTransaction();
+            sess.persist(test);
+            sess.getTransaction().commit();
+            sess.close();
+
             return 1;
         });
     }

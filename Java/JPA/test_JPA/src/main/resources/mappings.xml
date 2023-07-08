@@ -1,0 +1,4 @@
+<hibernate-mappings>
+    <class name="dev.devs.TestHibernate.TestEntity" table="test_CRUD"/>
+
+</hibernate-mappings>
