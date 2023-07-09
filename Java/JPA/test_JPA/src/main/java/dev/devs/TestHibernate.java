@@ -1,6 +1,10 @@
 package dev.devs;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Root;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Session;
@@ -9,10 +13,12 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import org.hibernate.cfg.Configuration;
 
+import java.util.List;
+
 
 public class TestHibernate {
 
-    SessionFactory sessionFactory = null;
+    private SessionFactory sessionFactory = null;
 
     @Entity
     @Table(name="test_CRUD")
@@ -64,19 +70,61 @@ public class TestHibernate {
                 configuration.buildSessionFactory(SSRBuilder.build());
     }
     private interface Transaction {
-        public int run();
+        public void run(EntityManager em);
     }
 
-    public void run() {
-        run_transaction(()-> {
-            Session sess = this.sessionFactory.openSession();
-            TestEntity test = new TestEntity("test");
-            sess.beginTransaction();
-            sess.persist(test);
-            sess.getTransaction().commit();
-            sess.close();
+    public void insert_transaction(String[] strs) {
+        // Suprisingly, JPA doesn't support insert operation in JPA Criteria
+        // API.
+        Session session = this.sessionFactory.openSession();
+        // TODO: check if session.beginTransaction() required
+        session.beginTransaction();
 
-            return 1;
+        for (String str: strs) {
+            TestEntity te = new TestEntity(str);
+            // TODO: is there any overhead calling persist for each object?
+            // TODO: if I don't have to, can I insert in bulk?
+            session.persist(te);
+        }
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    public void select_transaction() {
+        run_transaction((em) -> {
+
+            CriteriaQuery<TestEntity> criteriaQuery = em.getCriteriaBuilder().createQuery(TestEntity.class);
+            // TODO: what is root? why is root used?
+            Root<TestEntity> root = criteriaQuery.from(TestEntity.class);
+            criteriaQuery.select(root);
+            // TODO: one tutorial suggested to use session to creat query.
+            // TODO: need to find good practice.
+            List<TestEntity> results = em.createQuery(criteriaQuery).getResultList();
+
+            for (TestEntity record: results) {
+                System.out.println("record content: " + record.getContent());
+            }
+        });
+    }
+    public void update_transaction() {
+        run_transaction((em) -> {
+
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<TestEntity> cq = cb.createQuery(TestEntity.class);
+            // TODO: can I share root for criteria query and criteria update?
+            Root<TestEntity> cq_root = cq.from(TestEntity.class);
+            cq.select(cq_root);
+            List<TestEntity> results = em.createQuery(cq).getResultList();
+
+            CriteriaUpdate<TestEntity> cu = cb.createCriteriaUpdate(TestEntity.class);
+            Root<TestEntity> cu_root = cu.from(TestEntity.class);
+            cu.set(cu_root.get("content"), "updated");
+
+
+            // TODO: allow_update_outside_transaction is right setting to be true?
+            int updatedCount = em.createQuery(cu).executeUpdate();
+            System.out.println(updatedCount);
         });
     }
 
@@ -84,8 +132,16 @@ public class TestHibernate {
         Session session = this.sessionFactory.openSession();
         // TODO: check if session.beginTransaction() required
         session.beginTransaction();
-        transaction.run();
-        session.getTransaction().commit();
+        EntityManager em = session.getEntityManagerFactory().createEntityManager();
+        EntityTransaction em_trans = em.getTransaction();
+        em_trans.begin();
+
+
+        transaction.run(em);
+        // TODO: weird thing is, that I need to commit in entityTransaction not session to udpate
+        // TODO: insert is committed with session.
+        em_trans.commit();
+
         session.close();
     }
 

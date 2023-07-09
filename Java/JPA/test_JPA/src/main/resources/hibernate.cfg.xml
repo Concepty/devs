@@ -9,6 +9,7 @@
         <property name="connection.password">1234</property>
         <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <property name="connection.pool_size">5</property>
+        <property name="allow_update_outside_transaction">true</property>
 
 <!--        Mapping information is Annotated on each Entity Class-->
     </session-factory>
