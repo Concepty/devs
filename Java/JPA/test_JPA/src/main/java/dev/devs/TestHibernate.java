@@ -7,8 +7,10 @@ import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Root;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.HibernateError;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import org.hibernate.cfg.Configuration;
@@ -66,8 +68,15 @@ public class TestHibernate {
         StandardServiceRegistryBuilder SSRBuilder =
                 new StandardServiceRegistryBuilder()
                         .applySettings(configuration.getProperties());
-        this.sessionFactory =
-                configuration.buildSessionFactory(SSRBuilder.build());
+        StandardServiceRegistry SSR = SSRBuilder.build();
+
+        try {
+            this.sessionFactory = configuration.buildSessionFactory(SSR);
+        } catch (HibernateError he) {
+            // TODO: Should I destroy SSR on exception?
+            StandardServiceRegistryBuilder.destroy(SSR);
+            throw he;
+        }
     }
     private interface Transaction {
         public void run(EntityManager em);
