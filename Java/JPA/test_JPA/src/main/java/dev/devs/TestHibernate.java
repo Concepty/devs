@@ -19,7 +19,13 @@ import java.util.List;
 
 
 public class TestHibernate {
-
+    /*
+     * $ mysql -uroot -p
+     * > create user 'test_hibernate'@'localhost' identified by '1234';
+     * > create database test_hibernate;
+     * > grant all privileges on test_hibernate.* to 'test_hibernate'@'localhost';
+     * > flush privileges;
+     * */
     private SessionFactory sessionFactory = null;
 
     @Entity

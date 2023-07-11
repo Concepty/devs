@@ -30,7 +30,6 @@ public class TestHibernateAPI {
         * $ mysql -uroot -p
         * > create user 'test_hibernate'@'localhost' identified by '1234';
         * > create database test_hibernate;
-        * > create table test_hibernate.test_CRUD (id INT PRIMARY KEY, name VARCHAR(20));
         * > grant all privileges on test_hibernate.* to 'test_hibernate'@'localhost';
         * > flush privileges;
         * */

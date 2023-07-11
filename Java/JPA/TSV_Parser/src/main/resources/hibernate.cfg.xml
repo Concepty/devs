@@ -5,11 +5,11 @@
         <property name="hbm2ddl.auto">update</property>
         <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
         <property name="connection.url">jdbc:mysql://localhost:3306/test_hibernate</property>
-        <property name="connection.username">test_hibernate</property>
-        <property name="connection.password">1234</property>
+        <property name="connection.username">IMDB</property>
+        <property name="connection.password">IMDB</property>
         <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="connection.pool_size">5</property>
+        <property name="connection.pool_size">20</property>
 
-<!--        Mapping information is Annotated on each Entity Class-->
+        <!--        Mapping information is Annotated on each Entity Class-->
     </session-factory>
 </hibernate-configuration>
