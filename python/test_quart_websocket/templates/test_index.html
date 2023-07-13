@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<link rel="stylesheet" href="../static/bootstrap.css">
+<script src="../static/bootstrap.js"></script>
+<style>
+    #received_msg > li, #sent_msg > li{
+        width: 100%;
+        height: 2rem;
+    }
+    </style>
+<script>
+const ws_echo = new WebSocket("ws://localhost:7000/echo")
+
+ws_echo.onmessage = (event) => {
+    const msg = event.data
+    on_msg_received(msg)
+}
+ws_echo.onclose = (event) => {
+    console.log('code', event.code);
+    console.log('reason', event.reason);
+}
+
+function append_to_ul(ul_id, msg) {
+    var ul = document.getElementById(ul_id);
+    var li = document.createElement('li');
+    li.appendChild(document.createTextNode(msg));
+    ul.appendChild(li);
+}
+
+function send_msg() {
+    const msg = document.getElementById('msg').value;
+    ws_echo.send(msg)
+    //how to check whether this arrive?
+    append_to_ul('sent_msg', msg);
+}
+function on_msg_received(msg) {
+    append_to_ul('received_msg', msg);
+}
+</script>
+</head>
+<body>
+<div class="conatiner-fluid">
+    <div>
+        <input type="text" id="msg">
+        <button id="btn_send" type="button" class="btn btn-primary" onclick="send_msg()">Send</button>
+    </div>
+    <div class="row">
+        <div class="col-6">            
+            <ul id="received_msg"></ul>  
+        </div>
+        <div class="col-6">
+            <ul id="sent_msg"></ul>
+        </div>
+    </div>
+
+
+</div>
+</body>
+</html>
