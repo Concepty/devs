@@ -89,7 +89,7 @@ public class TestHibernate {
     }
 
     public void insert_transaction(String[] strs) {
-        // Suprisingly, JPA doesn't support insert operation in JPA Criteria
+        // Surprisingly, JPA doesn't support insert operation in JPA Criteria
         // API.
         Session session = this.sessionFactory.openSession();
         // TODO: check if session.beginTransaction() required
@@ -106,7 +106,7 @@ public class TestHibernate {
     }
 
     public void select_transaction() {
-        run_transaction((em) -> {
+        runTransaction((em) -> {
 
             CriteriaQuery<TestEntity> criteriaQuery = em.getCriteriaBuilder().createQuery(TestEntity.class);
             // TODO: what is root? why is root used?
@@ -122,7 +122,7 @@ public class TestHibernate {
         });
     }
     public void update_transaction() {
-        run_transaction((em) -> {
+        runTransaction((em) -> {
 
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -143,7 +143,7 @@ public class TestHibernate {
         });
     }
 
-    private void run_transaction(Transaction transaction) {
+    private void runTransaction(Transaction transaction) {
         Session session = this.sessionFactory.openSession();
         // TODO: check if session.beginTransaction() required
         session.beginTransaction();
