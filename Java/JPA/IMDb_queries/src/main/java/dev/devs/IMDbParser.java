@@ -3,19 +3,26 @@ package dev.devs;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class IMDbParser {
-    final private static String tsvPath;
+    final private static String tsvDirPath;
     private static Map<String, Class<?>> tableMap = new HashMap<>();
+    private BufferedReader tsvReader;
+    private int readLines;
+
+    private boolean EOF;
 
 
     static {
-        tsvPath = "~/devs/Test_Data_Set";
+        tsvDirPath = "/Users/hwansu/devs/Test_Data_Set/";
         // file - table mapping
         tableMap.put("title.ratings", IMDbTable.TitleRating.class);
-
     }
 
     // TODO: As inserting bulky records(~6.51GB total) I need to use Threads.
@@ -31,6 +38,42 @@ public class IMDbParser {
     // TODO: 3. (Extra Study) How does connection pool works in thread safe
     // TODO: way?
     // TODO:
+    // TODO:
+    // TODO:
 
+    public IMDbParser(String filePath) throws FileNotFoundException {
+        tsvReader = new BufferedReader(new FileReader(tsvDirPath + filePath + ".tsv"));
+        readLines = 0;
+        EOF = false;
+    }
+    public boolean isClosed() {
+        return EOF;
+    }
+    public void parseFirstLine() {
+        try {
+            tsvReader.readLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    // TODO: need common base class of tables
+    public IMDbTable.ParsableTable parseOneLine() {
+        String line;
+        IMDbTable.TitleRating titleRating = null;
+        try {
+            line = tsvReader.readLine();
+        } catch (IOException e) {
+            System.out.println("Number of lines read: " + Integer.toString(readLines));
+            throw new RuntimeException(e);
+        }
+        if (line != null) {
+            String[] cols = line.split("\t");
+            titleRating = new IMDbTable.TitleRating(cols[0], cols[1], Integer.parseInt(cols[2]));
+        } else {
+            EOF = true;
+            return null;
+        }
+        return titleRating;
+    }
 
 }

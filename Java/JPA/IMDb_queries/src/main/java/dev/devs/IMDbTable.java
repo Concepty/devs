@@ -8,10 +8,11 @@ public class IMDbTable {
     static {
 
     }
+    interface ParsableTable {}
 
     @Entity
-    @Table(name="title_rating")
-    public static class TitleRating {
+    @Table(name="title_ratings")
+    public static class TitleRating implements ParsableTable {
         @Id
         // TODO: check for compatibility of Id and Column
         @Column(name="tconst")
@@ -21,11 +22,17 @@ public class IMDbTable {
         private String averageRating;
         @Column(name="numVotes")
         private int numVotes;
+
+        public TitleRating (String tconst, String averageRating, int numVotes) {
+            this.tconst = tconst;
+            this.averageRating = averageRating;
+            this.numVotes = numVotes;
+        }
     }
 
     @Entity
     @Table(name="test")
-    public static class Test {
+    public static class Test implements ParsableTable  {
         @Id
         @Column(name="id")
         @Setter
