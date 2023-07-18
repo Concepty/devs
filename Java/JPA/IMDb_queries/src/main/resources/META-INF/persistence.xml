@@ -14,7 +14,7 @@
 <!--Hibernate-->
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
-            <property name="hibernate.connection.pool_size" value="5"/>
+            <property name="hibernate.connection.pool_size" value="15"/>
         </properties>
     </persistence-unit>
 </persistence>

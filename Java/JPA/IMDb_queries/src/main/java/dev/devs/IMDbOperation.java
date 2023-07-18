@@ -3,18 +3,24 @@ package dev.devs;
 import jakarta.persistence.*;
 
 public class IMDbOperation {
-    private static IMDbOperation instance;
+
+//    private IMDbOperation() {}
+//    private static class Holder {
+//        private static final IMDbOperation INSTANCE = new IMDbOperation();
+//    }
+//    public static IMDbOperation getInstance() {
+//        return Holder.INSTANCE;
+//    }
+
     private IMDbOperation() {}
+    private static IMDbOperation INSTANCE = new IMDbOperation();
+
     public static IMDbOperation getInstance() {
-        return instance;
-    }
-    static {
-        factory = Persistence.createEntityManagerFactory("IMDb");
-        // TODO: change to better singleton impl that can handle multi thread
-        instance = new IMDbOperation();
+        return INSTANCE;
     }
 
-    private static EntityManagerFactory factory;
+    private static EntityManagerFactory factory =
+            Persistence.createEntityManagerFactory("IMDb");
     private interface Transaction {
         public void run(EntityManager em);
     }

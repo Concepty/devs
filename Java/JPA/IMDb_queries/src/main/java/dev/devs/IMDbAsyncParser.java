@@ -20,6 +20,7 @@ public class IMDbAsyncParser extends IMDbParser{
     // bound by the orm object.
     // As I decided to use single provider and multi consumer, I
     // rather use more threads to create object from string array.
+    // TODO: Make sure only one thread run keepProduce()
     public void produce() throws InterruptedException {
         // TODO: would it be better to let IMDbParser do the parsing?
         String line;
@@ -31,6 +32,9 @@ public class IMDbAsyncParser extends IMDbParser{
         }
         if (line != null) {
             recordQueue.put(line.split("\t"));
+        } else {
+            // TODO: bad impl, reimplementing TSVParser
+            EOF = true;
         }
     }
     public void keepProduce() throws InterruptedException {
@@ -41,6 +45,7 @@ public class IMDbAsyncParser extends IMDbParser{
 
     public IMDbTable.TitleRating poll() {
         String[] cols = recordQueue.poll();
+        if (cols == null) return null;
         return new IMDbTable.TitleRating(cols[0], cols[1], Integer.parseInt(cols[2]));
     }
 }

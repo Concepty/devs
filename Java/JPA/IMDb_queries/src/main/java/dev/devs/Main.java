@@ -11,7 +11,7 @@ public class Main {
         Instant start = Instant.now();
 //        by1();
 //        byNum(1000);
-        asyncInsert(100, 1);
+        asyncInsert(100, 10);
         Instant end = Instant.now();
         System.out.println("bulk insertion finished in : " + Long.toString(Duration.between(start, end).getSeconds()) + " seconds");
 
@@ -52,7 +52,6 @@ public class Main {
         ArrayList<Thread> threadPool = new ArrayList<>(threads);
         //TODO
         for (int i=0; i < threads; i++) {
-            System.out.println("bbb");
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {

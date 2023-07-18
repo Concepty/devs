@@ -14,7 +14,7 @@ public class TSVParser {
     final private static String tsvDirPath;
     protected BufferedReader tsvReader;
     protected int readLines;
-    private boolean EOF;
+    protected boolean EOF;
     static {
         // IMDb specific implementation
         tsvDirPath = "/Users/hwansu/devs/Test_Data_Set/";
