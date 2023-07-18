@@ -10,19 +10,22 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class IMDbParser {
-    final private static String tsvDirPath;
-    private static Map<String, Class<?>> tableMap = new HashMap<>();
-    private BufferedReader tsvReader;
-    private int readLines;
+/**
+ * Responsibility: parse tsv file and generate Entity object.
+ */
 
-    private boolean EOF;
+public class IMDbParser extends TSVParser{
 
 
-    static {
-        tsvDirPath = "/Users/hwansu/devs/Test_Data_Set/";
-        // file - table mapping
-        tableMap.put("title.ratings", IMDbTable.TitleRating.class);
+    public IMDbParser(String filePath) throws IOException {
+        super(filePath);
+    }
+
+    // TODO: would I create method for each Entity class?
+    public IMDbTable.TitleRating generateTitleRatingRecord() {
+        String[] cols = parseOneLine();
+        if (cols == null) return null;
+        return new IMDbTable.TitleRating(cols[0], cols[1], Integer.parseInt(cols[2]));
     }
 
     // TODO: As inserting bulky records(~6.51GB total) I need to use Threads.
@@ -41,39 +44,6 @@ public class IMDbParser {
     // TODO:
     // TODO:
 
-    public IMDbParser(String filePath) throws FileNotFoundException {
-        tsvReader = new BufferedReader(new FileReader(tsvDirPath + filePath + ".tsv"));
-        readLines = 0;
-        EOF = false;
-    }
-    public boolean isClosed() {
-        return EOF;
-    }
-    public void parseFirstLine() {
-        try {
-            tsvReader.readLine();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    // TODO: need common base class of tables
-    public IMDbTable.ParsableTable parseOneLine() {
-        String line;
-        IMDbTable.TitleRating titleRating = null;
-        try {
-            line = tsvReader.readLine();
-        } catch (IOException e) {
-            System.out.println("Number of lines read: " + Integer.toString(readLines));
-            throw new RuntimeException(e);
-        }
-        if (line != null) {
-            String[] cols = line.split("\t");
-            titleRating = new IMDbTable.TitleRating(cols[0], cols[1], Integer.parseInt(cols[2]));
-        } else {
-            EOF = true;
-            return null;
-        }
-        return titleRating;
-    }
+
 
 }

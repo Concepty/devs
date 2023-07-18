@@ -1,16 +1,19 @@
 package dev.devs;
 
 import jakarta.persistence.*;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
-import java.io.FileNotFoundException;
-
-public class IMDbTransaction {
+public class IMDbOperation {
+    private static IMDbOperation instance;
+    private IMDbOperation() {}
+    public static IMDbOperation getInstance() {
+        return instance;
+    }
     static {
         factory = Persistence.createEntityManagerFactory("IMDb");
+        // TODO: change to better singleton impl that can handle multi thread
+        instance = new IMDbOperation();
     }
+
     private static EntityManagerFactory factory;
     private interface Transaction {
         public void run(EntityManager em);
@@ -36,19 +39,6 @@ public class IMDbTransaction {
             em.persist(test);
         });
     }
-
-    public void insertByOneRecords(IMDbParser parser) {
-        while (!parser.isClosed()) {
-            // TODO: Do I need to specify the class implementing ParsableTable class?
-            IMDbTable.TitleRating tr = (IMDbTable.TitleRating)parser.parseOneLine();
-            if (tr != null) {
-                runUpdate((em -> {
-                    em.persist(tr);
-                }));
-            }
-        }
-    }
-
     public void insertByNumRecords(int num, IMDbParser parser) {
         /*
         * 1327947 records
@@ -63,14 +53,26 @@ public class IMDbTransaction {
         while (!parser.isClosed()) {
             runUpdate((em)->{
                 for (int i = 0; i < num; i++) {
-                    IMDbTable.TitleRating tr = (IMDbTable.TitleRating)parser.parseOneLine();
-                    if (tr != null) {
-                        em.persist(tr);
-                    } else {
-                        return;
-                    }
+                    IMDbTable.ParsableTable record = parser.generateTitleRatingRecord();
+                    if (record != null) em.persist(record);
+                    else return;
                 }
             });
         }
     }
+    public void insertAsync(int num, IMDbAsyncParser parser) {
+        if (num < 1) return;
+        while (!parser.isClosed()) {
+            runUpdate((em) -> {
+                for (int i = 0; i< num; i++) {
+                    // TODO: IMDbParser -> entity object,
+                    // TODO: IMDbAsyncParser ->
+                    IMDbTable.ParsableTable record = parser.poll();
+                    if (record != null) em.persist(record);
+                    else break;
+                }
+            });
+        }
+    }
+
 }
