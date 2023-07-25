@@ -6,6 +6,7 @@ import dev.devs.Tables.*;
 import jakarta.persistence.criteria.*;
 import org.hibernate.sql.results.internal.domain.CircularFetchImpl;
 
+import javax.swing.*;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,9 +34,9 @@ public class Main {
         System.out.println("Insert: 뉴 진스 앨범! 뉴 진스!");
         runInsert((em) ->{
             Album newJeans = new Album("New Jeans");
-            Music cookie = new Music("Cookie", "NewJeans", new Time(236000), newJeans);
-            Music hypeBoy = new Music("Hype Boy", "NewJeans", new Time(180000), newJeans);
-            Music attention = new Music("Attention", "NewJeans", new Time(181000), newJeans);
+            Music cookie = new Music("Cookie", "NewJeans", 236, newJeans);
+            Music hypeBoy = new Music("Hype Boy", "NewJeans", 180, newJeans);
+            Music attention = new Music("Attention", "NewJeans", 181, newJeans);
 //            List<Music> musics = new ArrayList<>();
 //            musics.add(cookie);
 //            musics.add(hypeBoy);
@@ -51,12 +52,64 @@ public class Main {
         System.out.println("Insert: 뉴 진스 앨범! Get Up!");
         runInsert((em) ->{
             Album getUp = new Album("Get Up");
-            Music newJeans = new Music("New Jeans", "NewJeans", new Time(109000), getUp);
-            Music superShy = new Music("Super Shy", "NewJeans", new Time(155000), getUp);
+            Music newJeans = new Music("New Jeans", "NewJeans", 109, getUp);
+            Music superShy = new Music("Super Shy", "NewJeans", 155, getUp);
             em.persist(newJeans);
             em.persist(superShy);
             em.persist(getUp);
         });
+
+
+        System.out.println("Insert:  호랑수월가!");
+        runInsert(em -> {
+            Album horangAlbum = new Album("호랑수월가");
+            Music horangMusic = new Music("호랑수월가", "함유주", 288, horangAlbum);
+            em.persist(horangAlbum);
+            em.persist(horangMusic);
+        });
+
+        System.out.println("Insert: First Dream");
+        runInsert(em -> {
+            Music spark = new Music("Spark", "XYNSIA", 186);
+            Music parallel = new Music("Parallel", "XYNSIA", 182);
+            Music phantomRain = new Music("환상비", "XYNSIA", 265);
+            Music glassCandy = new Music("유리맛 사탕", "XYNSIA", 226);
+            Music lucidDream = new Music("Lucid Dream", "XYNSIA", 212);
+
+            List<Music> musics = Arrays.asList(spark, parallel, phantomRain, glassCandy,lucidDream);
+            for (Music m: musics) {
+                // Testing if late persisting of album can be reflected on DB
+                // I doubt it, but it worked.
+                // TODO: find out why late changes persisted
+                /**
+                 * setting Album
+                 * setting Album
+                 * setting Album
+                 * setting Album
+                 * setting Album //First, why is setting Album early than inserting it even if I persisted it early.
+                 * Hibernate: insert into musics (album_id,artist,name,play_time,rating,id) values (?,?,?,?,?,?)
+                 * Hibernate: insert into musics (album_id,artist,name,play_time,rating,id) values (?,?,?,?,?,?)
+                 * Hibernate: insert into musics (album_id,artist,name,play_time,rating,id) values (?,?,?,?,?,?)
+                 * Hibernate: insert into musics (album_id,artist,name,play_time,rating,id) values (?,?,?,?,?,?)
+                 * Hibernate: insert into musics (album_id,artist,name,play_time,rating,id) values (?,?,?,?,?,?)
+                 * Hibernate: insert into albums (name,id) values (?,?)
+                 * //Second, is updating cascaded from Album?
+                 * Hibernate: update musics set album_id=?,artist=?,name=?,play_time=?,rating=? where id=?
+                 * Hibernate: update musics set album_id=?,artist=?,name=?,play_time=?,rating=? where id=?
+                 * Hibernate: update musics set album_id=?,artist=?,name=?,play_time=?,rating=? where id=?
+                 * Hibernate: update musics set album_id=?,artist=?,name=?,play_time=?,rating=? where id=?
+                 * Hibernate: update musics set album_id=?,artist=?,name=?,play_time=?,rating=? where id=?
+                 */
+
+
+                em.persist(m);
+            }
+
+            Album firstDream = new Album("First Dream", musics);
+            em.persist(firstDream);
+
+        });
+
 
         if (false) {
             System.out.println("Delete: Get Up 앨범이 지워집니다 ㅠㅠ");
@@ -101,85 +154,42 @@ public class Main {
             });
         }
 
-        if (true) {
-//            System.out.println("Cookie와 같은 앨범에는 어떤 노래들이 있을까요? (Query 2회)");
-//            runQuery((em) -> {
-//                /**
-//                 * CriteriaBuilder
-//                 * CriteriaQuery
-//                 * Root
-//                 * Predicate
-//                 * Expression
-//                 */
-//                CriteriaBuilder cb = em.getCriteriaBuilder();
-//                CriteriaQuery cq = cb.createQuery();
-//                Root<Music> musicRoot = cq.from(Music.class);
-//                cq.where(cb.equal(musicRoot.get("name"), "Cookie"));
-//
-//                List<Music> cookieList = em.createQuery(cq).getResultList();
-//
-//                Album cookieAlbum = cookieList.get(0).getAlbum();
-//
-//                CriteriaQuery cq2 = cb.createQuery();
-//                Root<Music> musicRoot2 = cq2.from(Music.class);
-//                cq2.where(cb.equal(musicRoot2.get("album"), cookieAlbum));
-//
-//                List<Music> results = em.createQuery(cq2).getResultList();
-//
-//                for (Music r: results) {
-//                    System.out.println("이런 노래들이 있어요. " + r.getName());
-//                }
-//
+        if (false) {
             System.out.println("Cookie와 같은 앨범에는 어떤 노래들이 있을까요? (subquery)");
-            // subquery
-            // select * from Music where album_id = (
-            // select id from Album where id = (
-            // select album_id from Music where name = "Cookie"
-            // ))
-            runQuery(em -> {
-                CriteriaBuilder cb = em.getCriteriaBuilder();
-                CriteriaQuery<Music> cq = cb.createQuery(Music.class);
-                Root<Music> musics = cq.from(Music.class);
+            /**
+             * subquery
+             * select * from Music where album_id = (
+             * select id from Album where id = (
+             * select album_id from Music where name = "Cookie"))
+             */
+            // TODO: there is unnecessary subquery return id from id.
+            // remove the subquery and make valid example with more table
 
-                Subquery<Album> subquery = cq.subquery(Album.class);
-                Root<Album> albumIdRoot = subquery.from(Album.class);
-
-                Subquery<Integer> nestedSubquery = subquery.subquery(Integer.class);
-                Root<Music> musicRoot = nestedSubquery.from(Music.class);
-
-                nestedSubquery.select(musicRoot.get("album")).where(cb.equal(musicRoot.get("name"), "Cookie"));
-                subquery.select(albumIdRoot.get("id")).where(cb.equal(albumIdRoot.get("id"), nestedSubquery));
-                cq.select(musics).where(cb.equal(musics.get("album"), subquery));
-
-                List<Music> results = em.createQuery(cq).getResultList();
-
-                for (Music m: results) {
-                    System.out.println("이런 노래들이 있어요. " + m.getName());
-                }
-
-
-
-            });
-
-
-
+//            runQuery(em -> {
 //                CriteriaBuilder cb = em.getCriteriaBuilder();
 //                CriteriaQuery<Music> cq = cb.createQuery(Music.class);
-//                Root<Music> musics =  cq.from(Music.class);
+//                Root<Music> musics = cq.from(Music.class);
 //
 //                Subquery<Album> subquery = cq.subquery(Album.class);
-//                Root<Album> albums = subquery.from(Album.class);
-//                subquery.select(albums.get("id")).where(cb.equal(albums.get("name"), "New Jeans"));
+//                Root<Album> albumIdRoot = subquery.from(Album.class);
 //
-//                // NOTE: musics.get() gets member of entity class, not column
+//                Subquery<Integer> nestedSubquery = subquery.subquery(Integer.class);
+//                Root<Music> musicRoot = nestedSubquery.from(Music.class);
+//
+//                nestedSubquery.select(musicRoot.get("album")).where(cb.equal(musicRoot.get("name"), "Cookie"));
+//                subquery.select(albumIdRoot.get("id")).where(cb.equal(albumIdRoot.get("id"), nestedSubquery));
 //                cq.select(musics).where(cb.equal(musics.get("album"), subquery));
 //
 //                List<Music> results = em.createQuery(cq).getResultList();
 //
-//                for (Music r: results) {
-//                    System.out.println("이런 노래들이 있어요. " + r.getName());
+//                for (Music m: results) {
+//                    System.out.println("이런 노래들이 있어요. " + m.getName());
 //                }
 //            });
+
+
+        }
+        if (true) {
 
         }
 

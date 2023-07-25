@@ -27,7 +27,7 @@ public class Tables {
 
         @Column(name="play_time")
         @Getter @Setter
-        private Time playTime;
+        private int playTime;
 
         @Column(name="rating", columnDefinition = "FLOAT DEFAULT 0.0")
         @Getter @Setter
@@ -38,6 +38,11 @@ public class Tables {
         @JoinColumn(name="album_id")
         @Getter @Setter
         private Album album;
+
+        @ManyToOne(cascade = CascadeType.ALL)
+        @JoinColumn(name="playlist_id")
+        @Getter @Setter
+        private Playlist playlist;
 
         public Music() {}
 
@@ -52,13 +57,13 @@ public class Tables {
             this.artist = artist;
         }
 
-        public Music(String name, String artist, Time playTime) {
+        public Music(String name, String artist, int playTime) {
             this.name = name;
             this.artist = artist;
             this.playTime = playTime;
         }
 
-        public Music(String name, String artist, Time playTime, Album album) {
+        public Music(String name, String artist, int playTime, Album album) {
             this.name = name;
             this.artist = artist;
             this.playTime = playTime;
@@ -78,7 +83,6 @@ public class Tables {
         @Getter @Setter
         private String name;
 
-        // TODO: estimate overhead of @Prepersist and @postload
         @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
         @Getter @Setter
         private List<Music> musics;
@@ -91,28 +95,38 @@ public class Tables {
         public Album(String name, List<Music> musics) {
             this.name = name;
             this.musics = musics;
+            // TODO: estimate overhead
+            for (Music music: musics) {
+                System.out.println("setting Album");
+                music.setAlbum(this);
+            }
         }
     }
 
-//    @Entity
-//    @Table(name="users")
-//    public static class User {
-//        @Id
-//        @GeneratedValue(strategy = GenerationType.AUTO)
-//        private int id;
-//
-//        @Column(name="name")
-//        @Getter @Setter
-//        private String name;
-//
-//        @Column(name="playlist")
-//        @Getter @Setter
-//        private List<Music> playlist;
-//
-//        @Column(name="likes")
-//        @Getter @Setter
-//        private List<Music>
-//
-//    }
+    public static class Playlist {
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private int id;
+
+        private
+
+
+    }
+
+    @Entity
+    @Table(name="users")
+    public static class User {
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private int id;
+
+        @Column(name="name")
+        @Getter @Setter
+        private String name;
+
+        @Column(name="playlist")
+        @Getter @Setter
+        private List<Music> playlist;
+    }
 
 }
