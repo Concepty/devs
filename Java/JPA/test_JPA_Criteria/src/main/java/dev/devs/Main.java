@@ -22,8 +22,9 @@ public class Main {
     // error(Hibernate: alter table musics drop foreign key FKbysp2ixjy266hujxff4g7ic7a)
     // It happens when there is no tables in database. because Hibernate try to drop foreign keys first
     // before dropping tables.
-
     public static void main(String[] args) {
-
+        JPAFunctions.runInsert((em -> {
+            em.persist(new Music());
+        }));
     }
 }

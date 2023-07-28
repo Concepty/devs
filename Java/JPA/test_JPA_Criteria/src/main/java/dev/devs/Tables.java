@@ -24,6 +24,17 @@ public class Tables {
         @JoinColumn(name = "album_id")
         private Album album;
 
+        @Column(name = "rating")
+        @Getter @Setter
+        private double rating;
+
+        @Column(name = "rating_count")
+        @Getter @Setter
+        private long ratingCount;
+
+        @ManyToMany(mappedBy = "musicRating")
+        private List<User> userRatings;
+
         @ManyToMany
         @JoinTable(
                 name = "Music_Artist",
@@ -31,6 +42,9 @@ public class Tables {
                 inverseJoinColumns = @JoinColumn(name = "artist_id")
         )
         private List<Artist> artists;
+
+        @OneToMany(mappedBy = "music")
+        private List<UserMusicRating> ratings;
 
         @OneToMany(mappedBy = "music")
         private List<MusicComment> comments;
@@ -105,7 +119,8 @@ public class Tables {
         @GeneratedValue(strategy = GenerationType.AUTO)
         private long id;
 
-
+        @OneToMany(mappedBy = "user")
+        private List<UserMusicRating> musicRating;
 
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
         private List<MusicComment> musicComments;
@@ -123,6 +138,26 @@ public class Tables {
         private long id;
 
         public Playlist () {}
+    }
+
+    @Entity
+    @Table(name = "User_Music_Rating")
+    public static class UserMusicRating {
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private long id;
+
+        @Column(name = "rating")
+        private int rating;
+
+        @ManyToOne(cascade = CascadeType.ALL)
+        @JoinColumn(name = "user_id")
+        private User user;
+
+        @ManyToOne(cascade = CascadeType.ALL)
+        @JoinColumn(name = "music_id")
+        private Music music;
+
     }
 
     @Entity

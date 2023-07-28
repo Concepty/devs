@@ -8,6 +8,7 @@
         <class>dev.devs.Tables$Artist</class>
         <class>dev.devs.Tables$User</class>
         <class>dev.devs.Tables$Playlist</class>
+        <class>dev.devs.Tables$UserMusicRating</class>
         <class>dev.devs.Tables$MusicComment</class>
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
