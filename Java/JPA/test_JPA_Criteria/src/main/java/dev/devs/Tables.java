@@ -20,50 +20,31 @@ public class Tables {
         @Getter @Setter
         private String name;
 
-        @ManyToOne
-        @JoinColumn(name = "album_id")
-        private Album album;
+        @Column(name = "playtime")
+        @Getter @Setter
+        private int playtime;
 
         @Column(name = "rating")
         @Getter @Setter
+        // average rating
         private double rating;
 
         @Column(name = "rating_count")
         @Getter @Setter
+        // number of rating given by users
         private long ratingCount;
 
-        @ManyToMany(mappedBy = "musicRating")
-        private List<User> userRatings;
+        @ManyToOne
+        @JoinColumn(name = "album_id")
+        private Album album;
 
-        @ManyToMany
-        @JoinTable(
-                name = "Music_Artist",
-                joinColumns = @JoinColumn(name = "music_id"),
-                inverseJoinColumns = @JoinColumn(name = "artist_id")
-        )
+        @ManyToMany(mappedBy = "musics")
         private List<Artist> artists;
 
-        @OneToMany(mappedBy = "music")
-        private List<UserMusicRating> ratings;
-
-        @OneToMany(mappedBy = "music")
-        private List<MusicComment> comments;
-
+        @ManyToMany(mappedBy = "musics")
+        private List<Playlist> playlists;
 
         public Music() {}
-    }
-
-    @Entity
-    @Table(name = "Music_User_Rating")
-    public static class MusicUserRating {
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private long id;
-
-
-
-        public MusicUserRating() {}
     }
 
     @Entity
@@ -78,17 +59,19 @@ public class Tables {
         @Getter @Setter
         private String name;
 
-        @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
+        @Column(name = "rating")
+        @Getter @Setter
+        private double rating;
+
+        @Column(name = "rating_count")
+        @Getter @Setter
+        private long ratingCount;
+
+        @OneToMany(mappedBy = "album")
         private List<Music> musics;
 
-        @ManyToMany
-        @JoinTable(
-                name = "Album_Artist",
-                joinColumns = @JoinColumn(name = "album_id"),
-                inverseJoinColumns = @JoinColumn(name = "artist_id")
-        )
+        @ManyToMany(mappedBy = "artists")
         private List<Artist> artists;
-
 
         public Album () {}
     }
@@ -101,10 +84,24 @@ public class Tables {
         @GeneratedValue(strategy = GenerationType.AUTO)
         private long id;
 
-        @ManyToMany(mappedBy = "artists")
+        @Column(name = "name")
+        @Getter @Setter
+        private String name;
+
+        @ManyToMany
+        @JoinTable(
+                name = "Artist_Music",
+                joinColumns = @JoinColumn(name = "artist_id"),
+                inverseJoinColumns = @JoinColumn(name = "music_id")
+        )
         private List<Music> musics;
 
-        @ManyToMany(mappedBy = "artists")
+        @ManyToMany
+        @JoinTable(
+                name = "Artist_Album",
+                joinColumns = @JoinColumn(name = "artist_id"),
+                inverseJoinColumns = @JoinColumn(name = "album_id")
+        )
         private List<Album> albums;
 
 
@@ -119,12 +116,15 @@ public class Tables {
         @GeneratedValue(strategy = GenerationType.AUTO)
         private long id;
 
+        @Column(name = "name")
+        @Getter @Setter
+        private String name;
+
         @OneToMany(mappedBy = "user")
-        private List<UserMusicRating> musicRating;
+        private List<MusicRating> musicRating;
 
-        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-        private List<MusicComment> musicComments;
-
+        @OneToMany(mappedBy = "user")
+        private List<AlbumRating> albumRating;
 
         public User() {}
     }
@@ -137,12 +137,20 @@ public class Tables {
         @GeneratedValue(strategy = GenerationType.AUTO)
         private long id;
 
+        @ManyToMany
+        @JoinTable(
+                name = "Playlist_Music",
+                joinColumns = @JoinColumn(name = "playlist_id"),
+                inverseJoinColumns = @JoinColumn(name = "music_id")
+        )
+        private List<Music> musics;
+
         public Playlist () {}
     }
 
     @Entity
-    @Table(name = "User_Music_Rating")
-    public static class UserMusicRating {
+    @Table(name = "Music_Rating")
+    public static class MusicRating {
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
         private long id;
@@ -150,45 +158,113 @@ public class Tables {
         @Column(name = "rating")
         private int rating;
 
-        @ManyToOne(cascade = CascadeType.ALL)
-        @JoinColumn(name = "user_id")
-        private User user;
+        @Column(name = "timestamp")
+        private Instant timestamp;
 
-        @ManyToOne(cascade = CascadeType.ALL)
+        @ManyToOne
         @JoinColumn(name = "music_id")
         private Music music;
 
+        @ManyToOne
+        @JoinColumn(name = "user_id")
+        private User user;
+
+        public MusicRating() {}
+
     }
 
-    @Entity
-    @Table(name = "Comment")
-    public static class MusicComment {
+//    @Entity
+//    @Table(name = "Music_Comment")
+//    public static class MusicComment {
+//
+//        @Id
+//        @GeneratedValue(strategy = GenerationType.AUTO)
+//        private long id;
+//
+//        @Column(name = "content")
+//        private String content;
+//
+//        @Column(name = "timestamp")
+//        private Instant timestamp;
+//
+//        @Column(name = "thumb_up")
+//        private long thumbUp;
+//
+//        @Column(name = "thumb_down")
+//        private long thumbDown;
+//
+//
+//        public MusicComment() {}
+//    }
 
+    @Entity
+    @Table(name = "Album_Rating")
+    public static class AlbumRating {
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
         private long id;
 
-        @Column(name = "content")
-        private String content;
+        @Column(name = "rating")
+        private int rating;
 
         @Column(name = "timestamp")
         private Instant timestamp;
 
-        @Column(name = "thumb_up")
-        private int thumbUp;
+        @ManyToOne
+        @JoinColumn(name = "album_id")
+        private Album album;
 
-        @Column(name = "thumb_down")
-        private int thumbDown;
-
-        @ManyToOne(cascade = CascadeType.ALL)
-        @JoinColumn(name = "music_id")
-        private Music music;
-
-        @ManyToOne(cascade = CascadeType.ALL)
+        @ManyToOne
         @JoinColumn(name = "user_id")
         private User user;
 
-        public MusicComment() {}
+        public AlbumRating() {}
     }
+
+
+//    @Entity
+//    @Table(name = "Album_Comment")
+//    public static class AlbumComment {
+//
+//        @Id
+//        @GeneratedValue(strategy = GenerationType.AUTO)
+//        private long id;
+//
+//        @Column(name = "content")
+//        private String content;
+//
+//        @Column(name = "timestamp")
+//        private Instant timestamp;
+//
+//        @Column(name = "thumb_up")
+//        private long thumbUp;
+//
+//        @Column(name = "thumb_down")
+//        private long thumbDown;
+//
+//        public AlbumComment() {}
+//    }
+
+//    @Entity
+//    @Table(name = "Artist_Comment")
+//    public static class ArtistComment {
+//        @Id
+//        @GeneratedValue(strategy = GenerationType.AUTO)
+//        private long id;
+//
+//        @Column(name = "content")
+//        private String content;
+//
+//        @Column(name = "timestamp")
+//        private Instant timestamp;
+//
+//        @Column(name = "thumb_up")
+//        private long thumbUp;
+//
+//        @Column(name = "thumb_down")
+//        private long thumbDown;
+//
+//        public ArtistComment() {}
+//    }
 
 }

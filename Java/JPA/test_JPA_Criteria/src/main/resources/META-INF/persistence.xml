@@ -3,13 +3,16 @@
     <persistence-unit name="test_Criteria">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>dev.devs.Tables$Music</class>
-        <class>dev.devs.Tables$MusicUserRating</class>
         <class>dev.devs.Tables$Album</class>
         <class>dev.devs.Tables$Artist</class>
         <class>dev.devs.Tables$User</class>
         <class>dev.devs.Tables$Playlist</class>
-        <class>dev.devs.Tables$UserMusicRating</class>
-        <class>dev.devs.Tables$MusicComment</class>
+        <class>dev.devs.Tables$MusicRating</class>
+        <class>dev.devs.Tables$AlbumRating</class>
+<!--        <class>dev.devs.Tables$</class>-->
+<!--        <class>dev.devs.Tables$</class>-->
+<!--        <class>dev.devs.Tables$</class>-->
+<!--        <class>dev.devs.Tables$</class>-->
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/test_JPA_Criteria"/>
