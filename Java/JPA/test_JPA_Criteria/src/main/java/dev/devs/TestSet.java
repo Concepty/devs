@@ -1,10 +1,72 @@
 package dev.devs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 import dev.devs.Tables.*;
+import jakarta.persistence.EntityManager;
 
 public class TestSet {
+
+    /**
+     * Artist
+     * Album
+     * Music
+     * User
+     * Playlist
+     * User Music Rating
+     * User ...
+     */
+
+
+    public static void insertTestSet1() {
+        final int ARTISTS = 100;
+        final int ALBUMS = 100;
+
+
+        //ARTIST
+        List<Artist> artists = new ArrayList<>();
+        JPAFunctions.runInsert(em -> {
+            int artistCount = 0;
+
+            for (artistCount = 0; artistCount < ARTISTS; artistCount++){
+                Artist artist = new Artist("Artist" + Integer.toString(artistCount));
+                artists.add(artist);
+                em.persist(artist);
+            }
+        });
+
+        //ALBUM
+        List<Album> albums = new ArrayList<>();
+        JPAFunctions.runInsert(em -> {
+            int albumCount = 0;
+
+            final int ARTISTS_IN_ALBUM = 3;
+
+
+            for (albumCount = 0; albumCount < ALBUMS; albumCount++) {
+                List<Artist> tempArtist = new ArrayList<>();
+                ThreadLocalRandom random = ThreadLocalRandom.current();
+                random.ints(0, ARTISTS)
+                        .distinct()
+                        .limit(ARTISTS_IN_ALBUM)
+                        .forEach(i -> {
+                            tempArtist.add(artists.get(i));
+                        });
+                Album album = new Album("Album" + Integer.toString(albumCount), tempArtist);
+                tempArtist.forEach(artist -> {
+                    artist.addAlbum(album);
+                });
+                albums.add(album);
+                em.persist(album);
+            }
+        });
+
+    }
+
+
 //    public static void insertDataSet() {
 //
 //        JPAFunctions.runInsert(em -> {

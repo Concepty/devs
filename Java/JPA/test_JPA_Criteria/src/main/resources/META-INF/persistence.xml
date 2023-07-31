@@ -8,10 +8,10 @@
         <class>dev.devs.Tables$User</class>
         <class>dev.devs.Tables$Playlist</class>
         <class>dev.devs.Tables$MusicRating</class>
+        <class>dev.devs.Tables$MusicComment</class>
         <class>dev.devs.Tables$AlbumRating</class>
-<!--        <class>dev.devs.Tables$</class>-->
-<!--        <class>dev.devs.Tables$</class>-->
-<!--        <class>dev.devs.Tables$</class>-->
+        <class>dev.devs.Tables$AlbumComment</class>
+        <class>dev.devs.Tables$ArtistComment</class>
 <!--        <class>dev.devs.Tables$</class>-->
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
