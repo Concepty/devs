@@ -21,6 +21,16 @@ public class TestSet {
      */
 
 
+    /**
+     * Case 1: create artists, persist artists, create albums, persist albums
+     * Result 1: JoinTable is empty
+     *
+     * Case 2: create artists, create albums, persist both (either case)
+     * Result 2: Join Table is present
+     *
+     * Case 3: create albums, persist albums, create artists, persist artists
+     * Result 3: Join Table is present! Compare it with case1
+     */
     public static void insertTestSet1() {
         final int ARTISTS = 100;
         final int ALBUMS = 100;
@@ -34,7 +44,7 @@ public class TestSet {
             for (artistCount = 0; artistCount < ARTISTS; artistCount++){
                 Artist artist = new Artist("Artist" + Integer.toString(artistCount));
                 artists.add(artist);
-                em.persist(artist);
+//                em.persist(artist);
             }
         });
 
@@ -60,56 +70,58 @@ public class TestSet {
                     artist.addAlbum(album);
                 });
                 albums.add(album);
+            }
+        });
+
+        JPAFunctions.runInsert(em -> {
+            artists.forEach(artist -> {
+                em.persist(artist);
+            });
+
+            albums.forEach(album -> {
+                em.persist(album);
+            });
+
+        });
+    }
+
+    public static void insertTestSet2() {
+        final int ALBUMS = 100;
+        final int ARTISTS = 100;
+
+        final int ALBUMS_IN_ARTISTS = 5;
+
+        //ALBUM
+        List<Album> albums = new ArrayList<>();
+        JPAFunctions.runInsert(em -> {
+            int albumCount = 0;
+            for (albumCount = 0; albumCount < ALBUMS; albumCount++) {
+                Album album = new Album("Album" + Integer.toString(albumCount));
+                albums.add(album);
                 em.persist(album);
             }
         });
 
+        //Artists
+        List<Artist> artists = new ArrayList<>();
+        JPAFunctions.runInsert(em -> {
+            int artistCount = 0;
+            for (artistCount = 0; artistCount < ARTISTS; artistCount++) {
+                List<Album> tempAlbums = new ArrayList<>();
+                ThreadLocalRandom random = ThreadLocalRandom.current();
+                random.ints(0, ALBUMS)
+                        .distinct()
+                        .limit(ALBUMS_IN_ARTISTS)
+                        .forEach(i -> {
+                            tempAlbums.add(albums.get(i));
+                        });
+                Artist artist = new Artist("Artists" + Integer.toString(artistCount));
+                tempAlbums.forEach(album -> {
+                    artist.addAlbum(album);
+                });
+                artists.add(artist);
+                em.persist(artist);
+            }
+        });
     }
-
-
-//    public static void insertDataSet() {
-//
-//        JPAFunctions.runInsert(em -> {
-//            Album newJeans = new Album("New Jeans");
-//            Music cookie = new Music("Cookie", "NewJeans", 236, newJeans);
-//            Music hypeBoy = new Music("Hype Boy", "NewJeans", 180, newJeans);
-//            Music attention = new Music("Attention", "NewJeans", 181, newJeans);
-//            em.persist(newJeans);
-//            em.persist(cookie);
-//            em.persist(hypeBoy);
-//            em.persist(attention);
-//        });
-//
-//        JPAFunctions.runInsert((em) ->{
-//            Tables.Album getUp = new Album("Get Up");
-//            Music newJeans = new Music("New Jeans", "NewJeans", 109, getUp);
-//            Music superShy = new Music("Super Shy", "NewJeans", 155, getUp);
-//            em.persist(newJeans);
-//            em.persist(superShy);
-//            em.persist(getUp);
-//        });
-//
-//        JPAFunctions.runInsert(em -> {
-//            Tables.Album horangAlbum = new Album("호랑수월가");
-//            Music horangMusic = new Music("호랑수월가", "함유주", 288, horangAlbum);
-//            em.persist(horangAlbum);
-//            em.persist(horangMusic);
-//        });
-//
-//        JPAFunctions.runInsert(em -> {
-//            Music spark = new Music("Spark", "XYNSIA", 186);
-//            Music parallel = new Music("Parallel", "XYNSIA", 182);
-//            Music phantomRain = new Music("환상비", "XYNSIA", 265);
-//            Music glassCandy = new Music("유리맛 사탕", "XYNSIA", 226);
-//            Music lucidDream = new Music("Lucid Dream", "XYNSIA", 212);
-//
-//            List<Music> musics = Arrays.asList(spark, parallel, phantomRain, glassCandy,lucidDream);
-//            for (Music m: musics) {
-//                em.persist(m);
-//            }
-//            Tables.Album firstDream = new Tables.Album("First Dream", musics);
-//            em.persist(firstDream);
-//
-//        });
-//    }
 }

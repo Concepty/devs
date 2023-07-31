@@ -105,6 +105,12 @@ public class Tables {
             this.artists = artists;
         }
 
+        public Album(String name) {
+            this.name = name;
+            this.rating = 0.0;
+            this.ratingCount = 0;
+        }
+
         public Album(String name, List<Music> musics, List<Artist> artists) {
             this.name = name;
             this.rating = 0.0;
