@@ -1,5 +1,7 @@
 package dev.devs;
 
+import lombok.Getter;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -11,32 +13,28 @@ import java.io.IOException;
  */
 
 public class TSVParser {
-    final private static String tsvDirPath;
+    //IMDbSpecific Implementation
+    final private static String tsvDirPath = "/Users/hwansu/devs/Test_Data_Set/";
     protected BufferedReader tsvReader;
     protected int readLines;
-    protected boolean EOF;
-    static {
-        // IMDb specific implementation
-        tsvDirPath = "/Users/hwansu/devs/Test_Data_Set/";
-        // file - table mapping
-    }
+    protected boolean closed;
+
     public TSVParser(String filePath) throws IOException {
         tsvReader = new BufferedReader(new FileReader(tsvDirPath + filePath + ".tsv"));
         readLines = 0;
-        EOF = false;
+        closed = false;
         // TSV specific implementation
         tsvReader.readLine();
     }
 
     public boolean isClosed() {
-        return EOF;
+        return closed;
     }
 
     // TODO: need common base class of tables
     // TODO: is bulk parsing required for performance sake?
     public String[] parseOneLine() {
         String line;
-        IMDbTable.TitleRating titleRating = null;
         try {
             line = tsvReader.readLine();
         } catch (IOException e) {
@@ -47,7 +45,7 @@ public class TSVParser {
             String[] cols = line.split("\t");
             return cols;
         } else {
-            EOF = true;
+            closed = true;
             return null;
         }
     }

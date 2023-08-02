@@ -1,7 +1,6 @@
 package dev.devs;
 
 import java.io.IOException;
-import java.util.RandomAccess;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -9,10 +8,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class IMDbAsyncParser extends IMDbParser{
 
     BlockingQueue<String[]> recordQueue;
+    public static int MAX_CONSUMERS = 100;
 
     public IMDbAsyncParser(String filePath) throws IOException {
         super(filePath);
-        recordQueue = new LinkedBlockingQueue<>(50);
+        recordQueue = new LinkedBlockingQueue<>(10);
     }
 
     // DECISION: queue orm object require more cpu bound work and more
@@ -22,20 +22,12 @@ public class IMDbAsyncParser extends IMDbParser{
     // rather use more threads to create object from string array.
     // TODO: Make sure only one thread run keepProduce()
     public void produce() throws InterruptedException {
-        // TODO: would it be better to let IMDbParser do the parsing?
-        String line;
-        try {
-            line = tsvReader.readLine();
-        } catch (IOException e) {
-            System.out.println("Number of lines read: " + Integer.toString(readLines));
-            throw new RuntimeException(e);
-        }
-        if (line != null) {
-            recordQueue.put(line.split("\t"));
-        } else {
-            // TODO: bad impl, reimplementing TSVParser
-            EOF = true;
-        }
+        String[] cols = parseOneLine();
+        if (cols != null) recordQueue.put(cols);
+    }
+    @Override
+    public boolean isClosed() {
+        return super.isClosed() && recordQueue.size() == 0;
     }
     public void keepProduce() throws InterruptedException {
         while (!isClosed()) {

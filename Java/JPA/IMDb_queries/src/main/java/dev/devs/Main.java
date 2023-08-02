@@ -9,15 +9,15 @@ public class Main {
     public static void main(String[] args) {
 
         Instant start = Instant.now();
-//        by1();
-//        byNum(1000);
-        asyncInsert(100, 10);
+//        insertByUnit(1000);
+//        insertAsyncByUnit(100, 10);
+        insertPreLoadedRecords(10000);
         Instant end = Instant.now();
         System.out.println("bulk insertion finished in : " + Long.toString(Duration.between(start, end).getSeconds()) + " seconds");
 
     }
 
-    public static void byNum(int records) {
+    public static void insertByUnit(int unit) {
         IMDbParser parser;
 
         try {
@@ -25,9 +25,9 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        IMDbOperation.getInstance().insertByNumRecords(records, parser);
+        IMDbOperation.getInstance().insertByNumRecords(unit, parser);
     }
-    public static void asyncInsert(int records, int threads) {
+    public static void insertAsyncByUnit(int unit, int threads) {
         IMDbAsyncParser parser;
 
         try {
@@ -49,14 +49,14 @@ public class Main {
         });
         producer.start();
 
-        ArrayList<Thread> threadPool = new ArrayList<>(threads);
+        ArrayList<Thread> threadPool = new ArrayList<>(IMDbAsyncParser.MAX_CONSUMERS);
         //TODO
         for (int i=0; i < threads; i++) {
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     System.out.println("consumer thread running...");
-                    IMDbOperation.getInstance().insertAsync(records, parser);
+                    IMDbOperation.getInstance().insertAsync(unit, parser);
                 }
             });
             threadPool.add(t);
@@ -94,5 +94,27 @@ public class Main {
 //            };
 //        });
 
+    }
+    public static void insertPreLoadedRecords(int unit) {
+        PreLoadedParser parser;
+        try {
+            parser = new PreLoadedParser("title.ratings");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        Instant start = Instant.now();
+        parser.loadTitleRating();
+        Instant end = Instant.now();
+        System.out.println("loading database in memory finished in : " + Long.toString(Duration.between(start, end).getSeconds()) + " seconds");
+
+
+        try {
+            parser = new PreLoadedParser("title.ratings");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        IMDbOperation.getInstance().insertByNumRecords(unit, parser);
     }
 }

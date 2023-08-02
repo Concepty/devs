@@ -45,8 +45,8 @@ public class IMDbOperation {
             em.persist(test);
         });
     }
-    public void insertByNumRecords(int num, IMDbParser parser) {
-        /*
+    public void insertByNumRecords(int commitUnit, IMDbParser parser) {
+        /**
         * 1327947 records
         * num == 1 : 277 seconds
         * num == 10 : 82 seconds
@@ -55,10 +55,10 @@ public class IMDbOperation {
         * num == 100000 : 56 seconds
         * 57 + (277 - 57) / num
         * */
-        if (num < 1) return;
+        if (commitUnit < 1) return;
         while (!parser.isClosed()) {
             runUpdate((em)->{
-                for (int i = 0; i < num; i++) {
+                for (int i = 0; i < commitUnit; i++) {
                     IMDbTable.ParsableTable record = parser.generateTitleRatingRecord();
                     if (record != null) em.persist(record);
                     else return;
@@ -66,16 +66,20 @@ public class IMDbOperation {
             });
         }
     }
-    public void insertAsync(int num, IMDbAsyncParser parser) {
-        if (num < 1) return;
+    public void insertAsync(int commitUnit, IMDbAsyncParser parser) {
+        /**
+         * 1327947 records
+         * commitUnit = 100, threads = 10, size of queue = 50 -> 19 seconds
+         * commitUnit = 100, threads = 10, size of queue = 1000 -> 19 seconds
+         * commitUnit = 100, threads = 10, size of queue = 10 -> 25 seconds
+         */
+        if (commitUnit < 1) return;
         while (!parser.isClosed()) {
             runUpdate((em) -> {
-                for (int i = 0; i< num; i++) {
-                    // TODO: IMDbParser -> entity object,
-                    // TODO: IMDbAsyncParser ->
+                for (int i = 0; i< commitUnit; i++) {
                     IMDbTable.ParsableTable record = parser.poll();
                     if (record != null) em.persist(record);
-                    else break;
+                    else return;
                 }
             });
         }
