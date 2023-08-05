@@ -9,7 +9,7 @@ public class TestGeneric<T> {
     }
 
     public void testGenericMethod() {
-//        this.t.testMethod1(); // Compile Error - symbol not resolved
+//        this.t.testMethod1(); // Compile Error - symbol not resolved, check TestExtendedTypeGeneric
         System.out.println(this.t.hashCode());
     }
 }
