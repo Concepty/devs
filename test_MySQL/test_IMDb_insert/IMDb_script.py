@@ -1,6 +1,9 @@
+# mysql-connector-python
+
 import mysql.connector
 import time
 import sys
+
 
 
 if len(sys.argv) == 2:
@@ -76,5 +79,5 @@ if __name__ == '__main__':
     50 -> 10.3 sec
     100 -> 7.4 sec
     """
-    insert_by_queries(queries)
+    # insert_by_queries(queries)
     # insert_by_file()

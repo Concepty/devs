@@ -1,0 +1,3 @@
+venv_IMDb/
+*.tsv
+insert_by_*.py
