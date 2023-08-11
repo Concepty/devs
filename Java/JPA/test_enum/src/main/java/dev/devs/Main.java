@@ -10,6 +10,11 @@ import jakarta.persistence.criteria.Root;
 
 import java.util.List;
 
+import dev.devs.TestConverterEnum.ConvertedEnum;
+/**
+ * https://www.baeldung.com/jpa-persisting-enums-in-jpa
+ */
+
 public class Main {
 
     private static EntityManagerFactory factory =
@@ -27,6 +32,7 @@ public class Main {
     public static void main(String[] args) {
 //        insertMyEnum();
         insertMyValuedEnum();
+        // insertMyConvertedEnum();
     }
 
     public static void insertMyEnum() {
@@ -76,6 +82,22 @@ public class Main {
         for (TestValuedEnum t: resultList) {
             System.out.println(t.getE());
         }
+    }
+
+    public static void insertMyConvertedEnum() {
+        TestConverterEnum c1 = new TestConverterEnum(TestConverterEnum.ConvertedEnum.ENUM1);
+        TestConverterEnum c2 = new TestConverterEnum(TestConverterEnum.ConvertedEnum.ENUM2);
+        TestConverterEnum c3 = new TestConverterEnum(TestConverterEnum.ConvertedEnum.ENUM3);
+
+        EntityManager em = factory.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(c1);
+        em.persist(c2);
+        em.persist(c3);
+        em.getTransaction().commit();
+        em.close();
+
+
     }
 
 }
