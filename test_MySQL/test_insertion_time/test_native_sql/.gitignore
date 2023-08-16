@@ -1,1 +1,2 @@
-insert_by_100.sql
+insert_by_*.sql
+*.tsv
