@@ -6,18 +6,19 @@ import sys
 
 
 
-if len(sys.argv) == 2:
+if len(sys.argv) == 3:
     INSERT_UNIT = int(sys.argv[1])
 else:
     INSERT_UNIT = 100
 
 
-def generate_sql_queries():
+def generate_sql_queries(DML_only = False):
     out = []
     with open('title.ratings.tsv', 'rt') as f_in:
         f_in.readline() # ignore the first line
-        out.append('drop table if exists Title_Rating;')
-        out.append('CREATE TABLE Title_Rating (tconst VARCHAR(255) NOT NULL, averageRating DOUBLE PRECISION, numVotes INT, PRIMARY KEY (tconst));')
+        if not DML_only:
+            out.append('drop table if exists Title_Rating;')
+            out.append('CREATE TABLE Title_Rating (tconst VARCHAR(255) NOT NULL, averageRating DOUBLE PRECISION, numVotes INT, PRIMARY KEY (tconst));')
         while True:
             buff = []
             for cursor in range(INSERT_UNIT):
@@ -70,7 +71,10 @@ def insert_by_file():
 
 
 if __name__ == '__main__':
-    queries = generate_sql_queries()
+    if len(sys.argv) == 3 and sys.argv[2] == 'true':
+        generate_sql_queries(True)
+    else:
+        queries = generate_sql_queries()
 
 
     """

@@ -9,11 +9,11 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-public class AsyncParser extends TSVParser{
+public class AsyncParser extends TSVParser {
 
-    BlockingDeque<String[]> recordQueue;
-    Thread producer;
-    List<Thread> consumers;
+    private BlockingDeque<String[]> recordQueue;
+    private Thread producer;
+    private List<Thread> consumers;
 
     public AsyncParser(String filePath) throws IOException {
         super(filePath);
@@ -53,7 +53,7 @@ public class AsyncParser extends TSVParser{
     }
 
     /**
-     * Client defines runnable.
+     * Client defines runnable (functor).
      * For this reason, poll (and further consuming methods) need to be
      * public and thus encapsulation is compromised.
      */

@@ -9,11 +9,11 @@ public class IMDbTable {
 
     }
     @Entity
-    @Table(name="title_ratings")
+    @Table(name="Title_Rating")
     public static class TitleRating {
         // 1327947 records
+        // NOTE: @Id is compatible with @Column
         @Id
-        // TODO: check for compatibility of Id and Column
         @Column(name="tconst")
         @Getter
         private String tconst;

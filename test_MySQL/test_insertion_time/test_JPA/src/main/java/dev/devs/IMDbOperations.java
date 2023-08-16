@@ -20,7 +20,7 @@ public class IMDbOperations {
         em.close();
     }
 
-    public static int insertRTPerUnit(int commitUnit, TSVParser parser) {
+    public static int insertTRPerUnit(int commitUnit, TSVParser parser) {
         if (commitUnit < 1) return -1;
         while (!parser.isClosed()) {
             runUpdate(em -> {
@@ -33,7 +33,7 @@ public class IMDbOperations {
         }
         return 0;
     }
-    public static int insertRTPerUnitAsync(int commitUnit, int consumers, AsyncParser parser) {
+    public static int insertTRPerUnitAsync(int commitUnit, int consumers, AsyncParser parser) {
         if (commitUnit < 1 || consumers < 1) return -1;
         Runnable consumerRunnable = new Runnable() {
             @Override
@@ -62,5 +62,14 @@ public class IMDbOperations {
         }
         return 0;
     }
-
+    public static int insertTRsByJPQL(SQLParser parser) {
+        while (!parser.isClosed()) {
+            runUpdate(em -> {
+                String sql = parser.parseOneLine();
+                if (sql == null) return;
+                em.createQuery(sql).executeUpdate();
+            });
+        }
+        return 0;
+    }
 }

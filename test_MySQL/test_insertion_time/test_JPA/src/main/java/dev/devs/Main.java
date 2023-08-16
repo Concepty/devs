@@ -1,5 +1,6 @@
 package dev.devs;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
@@ -7,10 +8,9 @@ import java.time.Instant;
 public class Main {
     public static void main(String[] args) {
 //        insertNumRTs(5000);
-        insertNumRTsAsync(100000, 3);
+//        insertNumTRsAsync(100000, 3);
+        insertTRsByJPQL("insert_by_100.sql");
     }
-
-
 
     private interface Method {
         public void run();
@@ -27,7 +27,7 @@ public class Main {
      * persist row by row,commit per unit
      * @param unit
      */
-    public static void insertNumRTs(int unit) {
+    public static void insertNumTRs(int unit) {
         runWithTimer(() -> {
             TSVParser parser;
 
@@ -36,10 +36,10 @@ public class Main {
             } catch (IOException ioe) {
                 throw new RuntimeException(ioe);
             }
-            IMDbOperations.insertRTPerUnit(unit, parser);
+            IMDbOperations.insertTRPerUnit(unit, parser);
         });
     }
-    public static void insertNumRTsAsync(int unit, int threads) {
+    public static void insertNumTRsAsync(int unit, int threads) {
         runWithTimer(() -> {
             AsyncParser parser;
 
@@ -48,7 +48,20 @@ public class Main {
             } catch (IOException ioe) {
                 throw new RuntimeException(ioe);
             }
-            IMDbOperations.insertRTPerUnitAsync(unit, threads, parser);
+            IMDbOperations.insertTRPerUnitAsync(unit, threads, parser);
+        });
+    }
+
+    public static void insertTRsByJPQL(String queryFile) {
+        runWithTimer(() -> {
+            SQLParser parser;
+
+            try {
+                parser = new SQLParser(queryFile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            IMDbOperations.insertTRsByJPQL(parser);
         });
     }
 }

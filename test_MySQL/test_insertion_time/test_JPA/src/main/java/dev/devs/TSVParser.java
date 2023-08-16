@@ -15,7 +15,6 @@ public class TSVParser {
         } catch (IOException ioe) {
             tsvReader = new BufferedReader(new FileReader(tsvDirPath + filePath));
         }
-
         closed = false;
 
         // Ignoring the first line of the TSV file
