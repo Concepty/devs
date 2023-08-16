@@ -1,1 +1,7 @@
 **/.idea/
+
+.DS_Store
+
+Test_Data_Set/**/*
+
+git-token
