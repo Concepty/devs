@@ -1,3 +1,1 @@
-venv_IMDb/
-*.tsv
-insert_by_*.py
+insert_by_100.sql
