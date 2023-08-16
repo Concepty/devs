@@ -23,6 +23,8 @@ public class Main {
     // It happens when there is no tables in database. because Hibernate try to drop foreign keys first
     // before dropping tables.
     public static void main(String[] args) {
-        TestSet.insertTestSet2();
+        TestSet.insertTestSet1();
+        // TestSet.insertTestSet2(true);
+        // TestSet.insertTestSet3(false);
     }
 }
