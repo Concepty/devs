@@ -46,7 +46,6 @@ public class IMDbOperations {
                             em.persist(new TitleRating(tsvLine));
                         }
                     });
-                    System.out.println("Committed");
                 }
             }
         };

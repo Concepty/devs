@@ -4,8 +4,6 @@ import mysql.connector
 import time
 import sys
 
-
-
 if len(sys.argv) == 3:
     INSERT_UNIT = int(sys.argv[1])
 else:

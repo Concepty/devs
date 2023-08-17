@@ -146,7 +146,7 @@ public class TestSet {
      */
     public static void insertTestSet3(boolean doesAlbumKnowArtists) {
         final int ALBUMS = 100;
-        final int ARTISTS = 100;
+        final int ARTISTS = 100;q
 
         final int ALBUMS_IN_ARTISTS = 5;
 

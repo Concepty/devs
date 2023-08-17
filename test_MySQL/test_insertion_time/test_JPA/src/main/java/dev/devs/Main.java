@@ -8,8 +8,8 @@ import java.time.Instant;
 public class Main {
     public static void main(String[] args) {
 //        insertNumRTs(5000);
-//        insertNumTRsAsync(100000, 3);
-        insertTRsByJPQL("insert_by_100.sql");
+        insertNumTRsAsync(1, 1);
+//        insertTRsByJPQL("insert_by_100.sql");
     }
 
     private interface Method {

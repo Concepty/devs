@@ -35,5 +35,7 @@ public class IMDbTable {
             this.averageRating = cols[1];
             this.numVotes = Integer.parseInt(cols[2]);
         }
+
+        public TitleRating() {}
     }
 }
