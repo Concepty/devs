@@ -7,8 +7,9 @@ import java.time.Instant;
 
 public class Main {
     public static void main(String[] args) {
-//        insertNumRTs(5000);
-        insertNumTRsAsync(1, 1);
+//        insertNumTRs(5);
+        insertNumTRsAsync(50, 1);
+
 //        insertTRsByJPQL("insert_by_100.sql");
     }
 
@@ -20,7 +21,7 @@ public class Main {
         Instant start = Instant.now();
         method.run();
         Instant end = Instant.now();
-        System.out.println("insertion finished in :" + Long.toString(Duration.between(start, end). getSeconds()) + " seconds");
+        System.out.println("insertion finished in :" + Duration.between(start, end).toMillis() + " milliseconds");
     }
 
     /**
