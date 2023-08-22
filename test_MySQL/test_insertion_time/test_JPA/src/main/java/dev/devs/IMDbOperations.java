@@ -61,6 +61,38 @@ public class IMDbOperations {
         }
         return 0;
     }
+    public static int persistTRPerUnitAsync(int commitUnit, int consumers, AsyncParser parser) {
+        if (commitUnit < 1 || consumers < 1) return -1;
+        Runnable consumerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                while(!parser.isClosed()) {
+
+                    EntityManager em = factory.createEntityManager();
+                    em.getTransaction().begin();
+                    for (int i = 0; i < commitUnit; i++) {
+                        String[] tsvLine = parser.poll();
+                        if (tsvLine == null) return;
+                        em.persist(new TitleRating(tsvLine));
+                    }
+                    // em.getTransaction().commit(); // for testing capability of single producer for a number of consumers.
+                    // TODO: need profiler to measure needed response time precisely. This kind of indirect approach doesn't give good result.
+                    em.close();
+                }
+            }
+        };
+        try {
+            parser.runProducer();
+            for (int j = 0; j < consumers; j++) {
+                parser.runConsumer(consumerRunnable);
+            }
+            parser.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
+
     public static int insertTRsByJPQL(SQLParser parser) {
         while (!parser.isClosed()) {
             runUpdate(em -> {
