@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
 //        insertNumTRs(5);
         insertNumTRsAsync(50, 1);
-
+//        persistNumTRsAsync(1, 1);
 //        insertTRsByJPQL("insert_by_100.sql");
     }
 
@@ -50,6 +50,19 @@ public class Main {
                 throw new RuntimeException(ioe);
             }
             IMDbOperations.insertTRPerUnitAsync(unit, threads, parser);
+        });
+    }
+
+    public static void persistNumTRsAsync(int unit, int threads) {
+        runWithTimer(() -> {
+            AsyncParser parser;
+
+            try {
+                parser = new AsyncParser("title.ratings.tsv");
+            } catch (IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+            IMDbOperations.persistTRPerUnitAsync(unit, threads, parser);
         });
     }
 
