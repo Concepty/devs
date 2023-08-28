@@ -1,9 +1,13 @@
 # mysql-connector-python
 
+import os
 import mysql.connector
 import time
-import sys
 from optparse import OptionParser
+
+MODULE_DIR = os.path.dirname(os.path.abspath(__file__)) + '/'
+
+print('MODULE_DIR: ', MODULE_DIR)
 
 CONFIG = {}
 
@@ -19,7 +23,7 @@ CONFIG['JPA'] = options.JPA
 
 def generate_sql_queries(unit: int, for_jpa: bool = False):
     out = []
-    with open('title.ratings.tsv', 'rt') as f_in:
+    with open(MODULE_DIR + 'title.ratings.tsv', 'rt') as f_in:
         f_in.readline() # ignore the first line
         if not for_jpa:
             out.append('drop table if exists Title_Rating;')
@@ -34,7 +38,7 @@ def generate_sql_queries(unit: int, for_jpa: bool = False):
             if not buff: break
             out.append('INSERT INTO Title_Rating (tconst, averageRating, numVotes) VALUES ' + ', '.join(buff) + ';')
     file_name = f'insert_by_{unit}.sql' if not for_jpa else f'insert_by_{unit}_with_jpa.sql'
-    with open(file_name, 'wt') as f_out:
+    with open(MODULE_DIR + file_name, 'wt') as f_out:
         for line in out:
             f_out.write(line + '\n')
     return out
