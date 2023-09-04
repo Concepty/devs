@@ -38,8 +38,4 @@ public class TSVParser {
         String[] cols = line.split("\t");
         return cols;
     }
-
-
-
-
 }

@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <persistence xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd" version="3.0">
-    <persistence-unit name="IMDb">
+    <persistence-unit name="test_profile_insert">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>dev.devs.IMDbTable$TitleRating</class>
+<!--        <class>dev.devs.Tables$Music</class>-->
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/test_insertion_time"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/test_profile_insert"/>
             <property name="jakarta.persistence.jdbc.user" value="test"/>
             <property name="jakarta.persistence.jdbc.password" value="1234"/>
             <!--Hibernate-->
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
             <property name="hibernate.hbm2ddl.auto" value="create"/>
-            <property name="hibernate.connection.pool_size" value="5"/>
+            <property name="hibernate.connection.pool_size" value="15"/>
+            <property name="hibernate.show_sql" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>

@@ -8,7 +8,7 @@ import java.time.Instant;
 public class Main {
     public static void main(String[] args) {
 //        insertNumTRs(5);
-        insertNumTRsAsync(50, 1);
+        insertNumTRsAsync(50, 5);
 //        persistNumTRsAsync(1, 1);
 //        insertTRsByJPQL("insert_by_100.sql");
     }
