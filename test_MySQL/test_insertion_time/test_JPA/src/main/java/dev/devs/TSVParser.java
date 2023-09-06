@@ -8,8 +8,11 @@ public class TSVParser {
     final private static String tsvDirPath = "/Users/hwansu/devs/Test_Data_Set/";
     protected BufferedReader tsvReader;
     private boolean closed;
+    private boolean ignoreTheFirstLine = true;
 
-    public TSVParser(String filePath) throws IOException {
+
+    public TSVParser(String filePath, boolean ignoreTheFirstLine) throws IOException {
+        this.ignoreTheFirstLine =  ignoreTheFirstLine;
         try {
             tsvReader = new BufferedReader(new FileReader(filePath));
         } catch (IOException ioe) {
@@ -19,6 +22,9 @@ public class TSVParser {
 
         // Ignoring the first line of the TSV file
         tsvReader.readLine();
+    }
+    public TSVParser(String filePath) throws IOException {
+        this(filePath, true);
     }
 
     public boolean isClosed() { return closed; }

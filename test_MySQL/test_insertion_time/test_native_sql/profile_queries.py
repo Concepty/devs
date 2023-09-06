@@ -13,19 +13,26 @@ TMP_SQL = 'tmp.sql'
 
 
 
-if 0:
+if 1:
     # mysql -utest -p1234 test_IMDb < insert_by_100.sql 
     # how to give stdin to subprocess?
 
     start_time = time.time()
-    p = subprocess.Popen(['mysql', '-utest', '-p1234', 'test_IMDb'], stdin = subprocess.PIPE)
+    with open(f'insert_by_{INSERT_UNIT}.sql', 'r') as script:
+        p = subprocess.Popen(['mysql', '-utest', '-p1234', 'test_load'],
+                         stdin=script,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE,
+                         text=True)
+        out, err = p.communicate()
 
-    p.communicate(input = f'insert_by_{INSERT_UNIT}.sql')
+        print('--out--\n' + out)
+        print('--err--\n' + err)
 
     end_time = time.time()
     print(f'time spent(INSERT unit: {INSERT_UNIT}): {end_time - start_time}')
 
-if 1:
+if 0:
     password = getpass.getpass('If you are not on test Database, Drop the operation.\nLOAD requires SUPER or SYSTEM_VARIABLES_ADMIN privilege(s). please insert root password: ')
     setup = 'SET GLOBAL local_infile=1;\n'
     query = r"LOAD DATA LOCAL INFILE './title.ratings.tsv' INTO TABLE Title_Rating FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES;" + '\n'

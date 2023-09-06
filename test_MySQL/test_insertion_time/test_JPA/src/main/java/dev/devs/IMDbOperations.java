@@ -8,11 +8,11 @@ import dev.devs.IMDbTable.*;
 public class IMDbOperations {
     private static EntityManagerFactory factory =
             Persistence.createEntityManagerFactory("IMDb");
-    private interface Transaction {
+    public interface Transaction {
         public void run(EntityManager em);
     }
 
-    private static void runUpdate(Transaction t) {
+    public static void runUpdate(Transaction t) {
         EntityManager em = factory.createEntityManager();
         em.getTransaction().begin();
         t.run(em);
@@ -33,7 +33,7 @@ public class IMDbOperations {
         }
         return 0;
     }
-    public static int insertTRPerUnitAsync(int commitUnit, int consumers, AsyncParser parser) {
+    public static int insertTRPerUnitAsync(int commitUnit, int consumers, AsyncParserSPMC parser) {
         if (commitUnit < 1 || consumers < 1) return -1;
         Runnable consumerRunnable = new Runnable() {
             @Override
@@ -61,7 +61,7 @@ public class IMDbOperations {
         }
         return 0;
     }
-    public static int persistTRPerUnitAsync(int commitUnit, int consumers, AsyncParser parser) {
+    public static int persistTRPerUnitAsync(int commitUnit, int consumers, AsyncParserSPMC parser) {
         if (commitUnit < 1 || consumers < 1) return -1;
         Runnable consumerRunnable = new Runnable() {
             @Override
