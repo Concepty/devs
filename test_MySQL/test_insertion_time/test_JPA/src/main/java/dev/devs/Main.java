@@ -7,7 +7,7 @@ import java.time.Instant;
 public class Main {
     public static void main(String[] args) {
 //        insertNumTRs(5);
-//        insertNumTRsAsync(50, 5);
+        insertNumTRsAsync(50, 20);
 //        persistNumTRsAsync(1, 1);
 //        insertTRsByJPQL("insert_by_100.sql");
 //        try {
@@ -15,7 +15,7 @@ public class Main {
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
-        insertTRsInSplit(5,5);
+//        insertTRsInSplit(5,5);
     }
 
     private interface Method {

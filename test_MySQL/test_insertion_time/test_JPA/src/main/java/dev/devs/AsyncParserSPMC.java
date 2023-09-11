@@ -89,6 +89,9 @@ public class AsyncParserSPMC extends TSVParser {
                 throw new RuntimeException(e);
             }
         });
+
+        System.out.println("queue was empty : " + emptyCount + " times");
+        System.out.println("queue was full : " + fullCount + " times");
     }
 
 
